@@ -13,36 +13,51 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
-window.findNRooksSolution = function(n, prevboard) {
+window.findNRooksSolution = function(n) {
   var solution = [];
+  var board;
+  var solutionCount;
   // create new board(n)
-  var board = new Board({'n':n})
-  if (prevboard){
+  // else create board from old array
+  if (n.hasOwnProperty('attributes')){
+    prevboard = n.rows()
+    n = n.attributes.n
+    board = new Board({'n':n})
     // map prevboard(n-1) to new board
     for (var i = 0;i < n;i++){
-      board.attribute[i] = _.map(board.rows()[i], function(value, j){return value | prevboard.rows()[i][j]})
-      console.log(board.attribute[i])
+      console.log(prevboard[i])
+      board.attributes[i] = _.map(board.rows()[i], function(value, j){return value | prevboard[i][j]})
     }
+  } else {
+    board = new Board({'n':n})
   }
   // check each spot not in conflict
   for (var i = 0;i < n;i++){
     for (var j = 0;j < n;j++){
       if ( board.attributes[i][j] ){
-        continue
+        break
       }
+
+      board.togglePiece(i,j)
+      
       if ( board.hasRowConflictAt(j) ){
-        continue
+        board.togglePiece(i,j)
+        break
       }
       if ( board.hasColConflictAt(i) ){
-        continue
+        board.togglePiece(i,j)
+        break
       }
+
+      if (i + 1 === n){
+        return board.rows()
+      }
+      // recurse on current iteration
+      // solution board
+      //console.log(board.attributes[i])
+      window.findNRooksSolution(board)
       board.togglePiece(i,j)
-      if (i === n){ return board}
-      // recurse on current solution board
-      console.log(board.attributes[i])
-      window.findNRooksSolution(n, board)
-      board.togglePiece(i,j)
-  }
+    }
   // solution = [
   //   [1,0,0],
   //   [0,1,0],
