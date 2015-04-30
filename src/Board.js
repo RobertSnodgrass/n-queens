@@ -166,13 +166,12 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      var n = this.get('n') -1
-      var col = majorDiagonalColumnIndexAtFirstRow
+      var n = this.get('n') - 1
+      var col = minorDiagonalColumnIndexAtFirstRow
       var diag = []
-      for (var i = n;i > 0;i--){
-        diag.push(this.get(i)[col])
-        col =  col - 1
-        if (col < 0) {
+      for (var i = 0;i < n;i++){
+        diag.push(this.get(i)[col - i])
+        if (col - i < 0) {
           break
         }
       }
