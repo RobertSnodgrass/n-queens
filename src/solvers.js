@@ -19,81 +19,63 @@ window.findNRooksSolution = function(n) {
   var solution = [];
   var board;
   var solutionCount;
-  // create new board(n)
-  // else create board from old array
-  if (n.hasOwnProperty('attributes')){ // typeof n !== 'number'
+  // 
+  // board or new board
+  //
+  if (n.hasOwnProperty('attributes')){
     var prevboard = n.rows()
     n = n.attributes.n
-    //console.log(window.__RECURSIONDEPTH__ + ' prevboartd: ' + n + ' r:', JSON.stringify(prevboard));
     board = new Board({'n':n})
-    // map prevboard(n-1) to new board
     for (var i = 0;i < n;i++){
-      //console.log(prevboard[i])
       board.attributes[i] = _.map(board.rows()[i], function(value, j){return value | prevboard[i][j]})
     }
-    //console.log(window.__RECURSIONDEPTH__ + ' board_to_check: ' + n + ' r:', JSON.stringify(prevboard));
   } else {
-    //console.log('STARTING...!!!!!!!')
     board = new Board({'n':n})
   }
-  // check each spot not in conflict
+
+  // iterate row
   for (var i = 0;i < n;i++){
+    // iterate column
     for (var j = 0;j < n;j++){
-      //
-      // break on this since piece is already placed
-      //
+      // piece already placed
       if ( board.attributes[i][j] ){
         break
       }
-      // 
-      // Intermediate state?
-      // PLACE A PIECE
+
+
+      //
+      // place piece
+      //
       board.togglePiece(i,j)
-      // console.log(window.__RECURSIONDEPTH__ + ' toggling: i:' + i + ' j:'+j, JSON.stringify(board));
       //
-      // break on this
       //
-      if ( board.hasAnyRookConflicts() ){
+
+      // check conflicts
+      if ( board.hasAnyRooksConflicts() ){
         board.togglePiece(i,j)
-        // console.log(window.__RECURSIONDEPTH__ + ' has row conflict: i:' + i + ' j:'+j, JSON.stringify(board));
         break
       }
 
-      //
-      // return on this decision 
-      // unwinding the decision?
-      // should be a solution?
+      // if solution push to global solution
       if (i + 1 === n && window.__RECURSIONDEPTH__){ // if in last row and within a recursion
-        console.log(window.__RECURSIONDEPTH__ + ' SOLUTION: ' + n + ' ROOKS:', JSON.stringify(board.rows()));
         window.__SOLUTION__.push(board.rows())
         return true
       }
-
-      //console.log(board.attributes[i])
-      // console.log(window.__RECURSIONDEPTH__ + ' Recursing...')
-      // console.log(JSON.stringify(board.rows()))
-      // window.__RECURSIONDEPTH__++
-      if (window.findNRooksSolution(board)){
-        // solution found
-        return
-      }
-      // window.__RECURSIONDEPTH__--
-      // UNPLACE A PIECE
-      board.togglePiece(i,j)
+      //
+      // 
+      // no piece
+      // no conflict
+      // ???? what decision would cause this to recurse
+      // recurse
+      var result = window.findNRooksSolution(board)
+      // 
+      if (!result) {board.togglePiece(i,j)}
     }
-    //console.log('going to next row')
   }
-    // solution = [
-    //   [1,0,0],
-    //   [0,1,0],
-    //   [0,0,1]
-    // ]
-
-    //console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-    //return solution;
-  // console.log('END...!!!!!!!')
-  // console.log(window.__RECURSIONDEPTH__ + ' WAT!?: ' + n + ' ROOKS:', JSON.stringify(board.rows()));
-    //return board.rows()
+  window.__SOLUTION__.push(board.rows())
+  for (var i in window.__SOLUTION__){
+    console.log(JSON.stringify(i));
+  }
 };
 
 
